@@ -4,6 +4,7 @@ import MovieCard from './MovieCard';
 import { useSelector } from 'react-redux';
 import Navbar from '../../component/Navbar';
 import Preloader from '../../component/Preloader'
+import axiosInstance from '../../utils/axiosInstance';
 
 const Moviesearch = () => {
 
@@ -14,7 +15,7 @@ const Moviesearch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/movie/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/movie/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 setSearch(response.data.moviedata)
             } else {

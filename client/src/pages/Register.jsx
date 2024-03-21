@@ -4,6 +4,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axiosInstance from '../utils/axiosInstance';
 
 const Register = () => {
 
@@ -42,7 +43,7 @@ const Register = () => {
             return;
         }
         try {
-            const { data } = await axios.post('/api/v1/user/register', userData); // Send userData to the server
+            const { data } = await axiosInstance.post('/api/v1/user/register', userData); // Send userData to the server
             toast.success('Register Successfully')
             navigate('/login')
             // Handle successful registration

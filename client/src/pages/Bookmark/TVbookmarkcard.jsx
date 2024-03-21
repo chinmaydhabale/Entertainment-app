@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setcontent } from '../../redux/slice/detailSlice';
+import axiosInstance from '../../utils/axiosInstance';
 
 const TVbookmarkcard = ({ series, removeBookmarkCard }) => {
 
@@ -14,7 +15,7 @@ const TVbookmarkcard = ({ series, removeBookmarkCard }) => {
 
     const removebookmark = async (id) => {
         try {
-            const { data } = await axios.delete(`/api/v1/data/bookmark/remove/${id}`)
+            const { data } = await axiosInstance.delete(`/api/v1/data/bookmark/remove/${id}`)
             if (data.success) {
                 removeBookmarkCard(id)
                 toast.success("UnBookmark")

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setcontent } from '../../../redux/slice/detailSlice';
+import axiosInstance from '../../../utils/axiosInstance';
 
 const RecomandMcard = ({ movie }) => {
 
@@ -17,7 +18,7 @@ const RecomandMcard = ({ movie }) => {
     useEffect(() => {
         const checkBookmarkStatus = async () => {
             try {
-                const { data } = await axios.post(`/api/v1/data/bookmark/check`, { movieId: movie._id });
+                const { data } = await axiosInstance.post(`/api/v1/data/bookmark/check`, { movieId: movie._id });
                 setIsBookmarked(data.success);
             } catch (error) {
                 console.log(error);
@@ -29,7 +30,7 @@ const RecomandMcard = ({ movie }) => {
 
     const Addtobookmark = async (id) => {
         try {
-            const { data } = await axios.post('/api/v1/data/bookmark/add', { movieId: id })
+            const { data } = await axiosInstance.post('/api/v1/data/bookmark/add', { movieId: id })
             if (data.success) {
                 setIsBookmarked(true);
                 toast.success("bookmark Movie")
@@ -42,7 +43,7 @@ const RecomandMcard = ({ movie }) => {
 
     const removebookmark = async (id) => {
         try {
-            const { data } = await axios.delete(`/api/v1/data/bookmark/remove/${id}`)
+            const { data } = await axiosInstance.delete(`/api/v1/data/bookmark/remove/${id}`)
             if (data.success) {
                 toast.success("UnBookmark Movie")
                 setIsBookmarked(false)

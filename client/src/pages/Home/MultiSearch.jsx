@@ -4,6 +4,7 @@ import MovieCard from '../movie/MovieCard';
 import TvseriesCard from '../TVseries/TvseriesCard';
 import { useSelector } from 'react-redux';
 import Navbar from '../../component/Navbar';
+import axiosInstance from '../../utils/axiosInstance'
 
 
 const MultiSearch = () => {
@@ -15,7 +16,7 @@ const MultiSearch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 setSearch(response.data.searchData)
             } else {

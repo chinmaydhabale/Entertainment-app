@@ -3,6 +3,7 @@ import TrendingCard from './TrendingCard';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 const Trending = () => {
@@ -13,7 +14,7 @@ const Trending = () => {
 
     const getmovies = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/trending/movies')
+            const { data } = await axiosInstance.get('/api/v1/data/trending/movies')
             if (data.success) {
                 setTrend(data)
             }

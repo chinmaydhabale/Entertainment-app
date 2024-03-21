@@ -122,8 +122,10 @@ exports.loginControllers = async (req, res) => {
 
         res.cookie("jwt", token, {
             withCredentials: true,
-            httpOnly: false,
+            httpOnly: true,
             maxAge: 100000000,
+            samesite: "none",
+            domain: 'localhost'
         });
 
         return res.status(200).send({

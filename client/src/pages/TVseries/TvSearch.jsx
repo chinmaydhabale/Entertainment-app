@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Navbar from '../../component/Navbar';
 import TvseriesCard from './TvseriesCard';
-
+import axiosInstance from '../../utils/axiosInstance';
 
 const TvSearch = () => {
 
@@ -14,7 +14,7 @@ const TvSearch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/series/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/series/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 setSearch(response.data.seriesdata)
             } else {

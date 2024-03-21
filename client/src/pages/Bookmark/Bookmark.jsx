@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setsearchinput } from '../../redux/slice/searchSlice';
 import Loader from '../../component/Loader';
+import axiosInstance from '../../utils/axiosInstance';
 
 const Bookmark = () => {
 
@@ -18,7 +19,7 @@ const Bookmark = () => {
 
     const getBookmark = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/bookmark');
+            const { data } = await axiosInstance.get('/api/v1/data/bookmark');
             if (data.success) {
                 setBookmark(data.bookmark);
             }
@@ -45,7 +46,7 @@ const Bookmark = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 dispatch(setsearchinput(response.data.searchData))
                 navigate('/search/bookmark')

@@ -19,7 +19,7 @@ const TVseries = () => {
 
     const getTvseries = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/tvseries')
+            const { data } = await axios.get('http://localhost:8080/api/v1/data/tvseries')
             if (data.success) {
                 setTvseries(data.tvseriesdata)
             }

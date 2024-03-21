@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import MovieCard from '../movie/MovieCard';
 import TvseriesCard from '../TVseries/TvseriesCard';
 import Navbar from '../../component/Navbar';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 const BookmarkSearch = () => {
@@ -15,7 +16,7 @@ const BookmarkSearch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 setSearch(response.data.searchData)
             } else {

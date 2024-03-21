@@ -3,6 +3,7 @@ import axios from 'axios'
 import RecomandScard from './RecomandScard';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../Loader';
+import axiosInstance from '../../../utils/axiosInstance';
 
 const Recomandseries = () => {
 
@@ -12,7 +13,7 @@ const Recomandseries = () => {
 
     const getseries = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/recomand/tvseries')
+            const { data } = await axiosInstance.get('/api/v1/data/recomand/tvseries')
             if (data.success) {
                 setrSeries(data)
             }

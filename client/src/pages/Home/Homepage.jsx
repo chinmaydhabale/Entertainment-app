@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import { setsearchinput } from '../../redux/slice/searchSlice'
 import axios from 'axios'
 import Preloader from '../../component/Preloader'
+import axiosInstance from '../../utils/axiosInstance'
+
 
 const Homepage = () => {
 
@@ -16,11 +18,14 @@ const Homepage = () => {
     const [query, setQuery] = useState('');
     const [isloader, setIsLoader] = useState(false)
 
+    useEffect(() => {
+        console.log("mounted")
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 dispatch(setsearchinput(response.data.searchData))
                 navigate('/search/multi')

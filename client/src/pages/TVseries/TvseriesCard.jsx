@@ -19,7 +19,7 @@ const TvseriesCard = ({ Tvseriescontent, imageUrl, title, TvseriesId }) => {
     useEffect(() => {
         const checkBookmarkStatus = async () => {
             try {
-                const { data } = await axios.post(`/api/v1/data/bookmark/check`, { tvseriesId: TvseriesId });
+                const { data } = await axios.post(`http://localhost:8080/api/v1/data/bookmark/check`, { tvseriesId: TvseriesId });
                 setIsBookmarked(data.success);
             } catch (error) {
                 console.log(error);
@@ -33,7 +33,7 @@ const TvseriesCard = ({ Tvseriescontent, imageUrl, title, TvseriesId }) => {
 
     const Addtobookmark = async (id) => {
         try {
-            const { data } = await axios.post('/api/v1/data/bookmark/add', { tvseriesId: id })
+            const { data } = await axios.post('http://localhost:8080/api/v1/data/bookmark/add', { tvseriesId: id })
             if (data.success) {
                 setIsBookmarked(true)
                 toast.success("Bookmark Tvseries")
@@ -47,7 +47,7 @@ const TvseriesCard = ({ Tvseriescontent, imageUrl, title, TvseriesId }) => {
 
     const removebookmark = async (id) => {
         try {
-            const { data } = await axios.delete(`/api/v1/data/bookmark/remove/${id}`)
+            const { data } = await axios.delete(`http://localhost:8080/api/v1/data/bookmark/remove/${id}`)
             if (data.success) {
                 toast.success("UnBookmark Tvseries")
                 setIsBookmarked(false)

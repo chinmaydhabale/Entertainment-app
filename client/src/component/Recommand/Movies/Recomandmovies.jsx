@@ -3,6 +3,7 @@ import axios from 'axios'
 import RecomandMcard from './RecomandMcard';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../Loader';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 const Recomandmovies = () => {
@@ -13,7 +14,7 @@ const Recomandmovies = () => {
 
     const getmovies = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/recomand/movies')
+            const { data } = await axiosInstance.get('/api/v1/data/recomand/movies')
             if (data.success) {
                 setrMovies(data)
             }

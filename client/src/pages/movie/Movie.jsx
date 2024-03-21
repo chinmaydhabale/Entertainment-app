@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { setsearchinput } from '../../redux/slice/searchSlice';
 import Preloader from '../../component/Preloader';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 const Movie = () => {
@@ -20,7 +21,7 @@ const Movie = () => {
 
     const getmovies = async () => {
         try {
-            const { data } = await axios.get('/api/v1/data/movies')
+            const { data } = await axiosInstance.get('/api/v1/data/movies')
             if (data.success) {
                 setMovie(data.moviedata)
             }
@@ -42,7 +43,7 @@ const Movie = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/movie/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/movie/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
                 dispatch(setsearchinput(response.data.moviedata))
                 navigate('/search/movie')

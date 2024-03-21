@@ -4,6 +4,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axiosInstance from '../utils/axiosInstance';
 
 const Login = () => {
 
@@ -16,7 +17,9 @@ const Login = () => {
     const validatepassword = async (event) => {
         event.preventDefault();
         try {
-            const { data } = await axios.post('/api/v1/user/login', { email: email, password: password })
+            const res = await axiosInstance.post('/api/v1/user/login', { email: email, password: password })
+            console.log(res)
+            const data = res.data
             if (data.success) {
                 toast.success(data.massage)
                 navigate('/')

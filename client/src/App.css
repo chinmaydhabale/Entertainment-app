@@ -1,0 +1,4 @@
+/* Hide scrollbar */
+.movie-slider::-webkit-scrollbar {
+    display: none;
+}

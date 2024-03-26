@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '../../component/Navbar';
 import TvseriesCard from './TvseriesCard';
 import axiosInstance from '../../utils/axiosInstance';
+import { setTvbookmarkdata } from '../../redux/slice/detailSlice';
 
 const TvSearch = () => {
 
+    // Accessing the search input from Redux state
     const searchstate = useSelector((state) => state.search.searchinput)
+
+    const dispatch = useDispatch()
     const [query, setQuery] = useState('');
-    const [Search, setSearch] = useState(searchstate)
+    const [Search, setSearch] = useState(searchstate) // Storing search results
+
+    const [isauth, setisauth] = useState(true)
+
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
+            // Fetching TV series data based on search query
             const response = await axiosInstance.get(`/api/v1/data/series/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
-                setSearch(response.data.seriesdata)
+                setSearch(response.data.seriesdata) // Updating search results
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -27,11 +34,34 @@ const TvSearch = () => {
         }
     };
 
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                // Checking bookmark status for authentication user
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check`);
+                if (data.success) {
+                    setisauth(true)
+                    dispatch(setTvbookmarkdata(data.bookmarkseries)) // Updating TV series bookmark data
+                } else {
+                    setisauth(false)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+
+        checkBookmarkStatus();
+
+    }, []);
+
+
 
     return (
         <div>
             <Navbar />
 
+            {/* Search form */}
             <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                 <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -45,7 +75,7 @@ const TvSearch = () => {
                 </div>
             </form>
 
-
+            {/* Displaying search results */}
             <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2 py-2">
                 {
                     Search && Search.length !== 0 ? Search.map((data) => {
@@ -54,7 +84,9 @@ const TvSearch = () => {
                             Tvseriescontent={data}
                             title={data.title}
                             imageUrl={data.big_image}
-                            TvseriesId={data._id} />
+                            TvseriesId={data._id}
+                            isauth={isauth}
+                        />
                     }) : <p>not found</p>
                 }
             </div>

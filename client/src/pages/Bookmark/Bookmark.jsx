@@ -1,37 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../../component/Navbar';
-import MBookmarkcard from './MBookmarkcard';
-import TVbookmarkcard from './TVbookmarkcard';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { setsearchinput } from '../../redux/slice/searchSlice';
-import Loader from '../../component/Loader';
-import axiosInstance from '../../utils/axiosInstance';
+import Navbar from '../../component/Navbar'; // Importing Navbar component
+import MBookmarkcard from './MBookmarkcard'; // Importing Bookmarkcard component for movies
+import TVbookmarkcard from './TVbookmarkcard'; // Importing Bookmarkcard component for TV series
+import { useNavigate } from 'react-router-dom'; // Importing useNavigate hook from react-router-dom
+import { useDispatch } from 'react-redux'; // Importing useDispatch hook from react-redux
+import { setsearchinput } from '../../redux/slice/searchSlice'; // Importing setsearchinput action from Redux slice
+import Loader from '../../component/Loader'; // Importing Loader component
+import axiosInstance from '../../utils/axiosInstance'; // Importing axiosInstance for API calls
 
 const Bookmark = () => {
+    const dispatch = useDispatch(); // Initializing useDispatch hook to dispatch actions
+    const navigate = useNavigate(); // Initializing useNavigate hook to navigate programmatically
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate();
+    // State variables
+    const [query, setQuery] = useState(''); // State variable to store search query
+    const [bookmark, setBookmark] = useState(null); // State variable to store bookmark data
 
-    const [query, setQuery] = useState('');
-    const [bookmark, setBookmark] = useState(null);
-
+    // Function to fetch bookmark data
     const getBookmark = async () => {
         try {
-            const { data } = await axiosInstance.get('/api/v1/data/bookmark');
+            const { data } = await axiosInstance.get(`/api/v1/data/bookmark`); // Making API call to fetch bookmark data
             if (data.success) {
-                setBookmark(data.bookmark);
+                setBookmark(data.bookmark); // Setting bookmark data to state
+            } else {
+                navigate('/login'); // Redirecting to login page if user is not authenticated
             }
         } catch (error) {
-            if (!error.response.data.success) {
-                navigate('/login');
-            }
-            console.log(error);
+            console.log(error); // Logging error if API call fails
         }
     };
 
-    const removeBookmarkCard = (id, isMovie) => {
+    // Function to remove bookmark card
+    const removeBookmarkCard = (id) => {
         setBookmark(prevState => ({
             ...prevState,
             bookmarkmovie: prevState.bookmarkmovie.filter(movie => movie._id !== id),
@@ -40,31 +40,30 @@ const Bookmark = () => {
     };
 
     useEffect(() => {
-        getBookmark();
+        getBookmark(); // Fetching bookmark data on component mount
     }, []);
 
+    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`); // Making API call to search bookmark data
             if (response.data.success) {
-                dispatch(setsearchinput(response.data.searchData))
-                navigate('/search/bookmark')
+                dispatch(setsearchinput(response.data.searchData)); // Dispatching action to set search input in Redux store
+                navigate('/search/bookmark'); // Navigating to bookmark search page
             } else {
-                // Handle no results found
-                console.log(response.data.message);
+                console.log(response.data.message); // Logging message if no results found
             }
         } catch (error) {
-            console.error(error);
+            console.error(error); // Logging error if API call fails
             // Handle error
         }
     };
 
-
-
     return (
         <div>
-            <Navbar />
+            <Navbar /> {/* Rendering Navbar component */}
+            {/* Search form */}
             <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                 <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -77,6 +76,7 @@ const Bookmark = () => {
                     <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                 </div>
             </form>
+            {/* Bookmark Movies */}
             <div className="container mx-auto py-2 ">
                 <h1 className='px-4 pb-2 text-xl text-cyan-600'>Bookmark Movies</h1>
                 <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2">
@@ -88,6 +88,7 @@ const Bookmark = () => {
                         <Loader />
                     )}
                 </div>
+                {/* Bookmark TV Series */}
                 <h1 className='p-4 text-xl text-cyan-600'>Bookmark Tvseries</h1>
                 <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2">
                     {bookmark ? bookmark.bookmarkseries.length !== 0 ? (
@@ -104,5 +105,3 @@ const Bookmark = () => {
 };
 
 export default Bookmark;
-
-

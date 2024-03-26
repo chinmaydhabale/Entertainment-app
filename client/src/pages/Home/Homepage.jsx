@@ -1,34 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import Trending from '../../component/TrendingMovies/Trending'
-import Recomandmovies from '../../component/Recommand/Movies/Recomandmovies'
-import Recomandseries from '../../component/Recommand/Tvseries/Recomandseries'
-import Navbar from '../../component/Navbar'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { setsearchinput } from '../../redux/slice/searchSlice'
-import axios from 'axios'
-import Preloader from '../../component/Preloader'
-import axiosInstance from '../../utils/axiosInstance'
-
+import React, { useEffect, useState } from 'react';
+import Trending from '../../component/TrendingMovies/Trending';
+import Recomandmovies from '../../component/Recommand/Movies/Recomandmovies';
+import Recomandseries from '../../component/Recommand/Tvseries/Recomandseries';
+import Navbar from '../../component/Navbar';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setsearchinput } from '../../redux/slice/searchSlice';
+import Preloader from '../../component/Preloader';
+import axiosInstance from '../../utils/axiosInstance';
 
 const Homepage = () => {
-
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [query, setQuery] = useState('');
-    const [isloader, setIsLoader] = useState(false)
-
-    useEffect(() => {
-        console.log("mounted")
-    }, [])
+    const [isloader, setIsLoader] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             const response = await axiosInstance.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
-                dispatch(setsearchinput(response.data.searchData))
-                navigate('/search/multi')
+                dispatch(setsearchinput(response.data.searchData)); // Dispatching action to set search input data
+                navigate('/search/multi'); // Navigating to search page
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -41,15 +34,15 @@ const Homepage = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            setIsLoader(true)
+            setIsLoader(true); // Setting loader to true after 3 seconds
         }, 3000);
-    })
-
+    }, []); // Adding an empty dependency array to ensure the effect runs only once
 
     return (
         <div>
             <Navbar />
             <div className='pt-2'>
+                {/* Search form */}
                 <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                     <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                     <div className="relative">
@@ -63,24 +56,29 @@ const Homepage = () => {
                     </div>
                 </form>
             </div>
-            {isloader ? <div>
+            {/* Conditional rendering based on loader */}
+            {isloader ? (
                 <div>
-                    <h1 className='text-xl p-4 text-cyan-900'>Trending Movies</h1>
-                    <Trending />
+                    <div>
+                        <h1 className='text-xl p-4 text-cyan-900'>Trending Movies</h1>
+                        <Trending />
+                    </div>
+                    <hr />
+                    <div>
+                        <h1 className='text-xl px-4 py-2 text-cyan-900'>Recommand Movies</h1>
+                        <Recomandmovies />
+                    </div>
+                    <hr />
+                    <div>
+                        <h1 className='text-xl px-4 py-2 text-cyan-900'>Recommand Tv Series</h1>
+                        <Recomandseries />
+                    </div>
                 </div>
-                <hr />
-                <div>
-                    <h1 className='text-xl px-4 py-2 text-cyan-900'>Recommand Movies</h1>
-                    <Recomandmovies />
-                </div>
-                <hr />
-                <div>
-                    <h1 className='text-xl px-4 py-2 text-cyan-900'>Recommand Tv Series</h1>
-                    <Recomandseries />
-                </div>
-            </div> : <Preloader />}
+            ) : (
+                <Preloader /> // Showing preloader while waiting for data to load
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default Homepage
+export default Homepage;

@@ -22,7 +22,7 @@ const app = express();
 
 //middlewares
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONT_URI,
     credentials: true
 }))
 app.use(express.json())

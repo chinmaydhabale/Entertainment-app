@@ -2,7 +2,7 @@ const usermodal = require('../Models/usermodel')
 const tvseries = require('../Models/Tvseriesmodel');
 const MovieModel = require('../Models/Moviesmodel');
 
-
+// Controller to get all movies
 exports.movieControllers = async (req, res) => {
     try {
         const moviedata = await MovieModel.find({});
@@ -28,6 +28,8 @@ exports.movieControllers = async (req, res) => {
         })
     }
 }
+
+// Controller to get all TV series
 exports.tvseriesControllers = async (req, res) => {
     try {
         const tvseriesdata = await tvseries.find({})
@@ -53,7 +55,8 @@ exports.tvseriesControllers = async (req, res) => {
     }
 }
 
-// get all tv-series and movie at single array
+
+// Controller to get all data (both movies and TV series)
 exports.getAllData = async (req, res) => {
     try {
         const movies = await MovieModel.find({});
@@ -84,6 +87,7 @@ exports.getAllData = async (req, res) => {
     }
 };
 
+// Controller to get recommended movies
 exports.recomandmoviescontroller = async (req, res) => {
     try {
         const recomandmovies = await MovieModel.aggregate([
@@ -114,7 +118,7 @@ exports.recomandmoviescontroller = async (req, res) => {
     }
 }
 
-
+// Controller to get recommended TV series
 exports.recomandseriescontroller = async (req, res) => {
 
     try {
@@ -149,7 +153,7 @@ exports.recomandseriescontroller = async (req, res) => {
 }
 
 
-// for trending movies
+// Controller to get trending movies
 exports.trendingMoviesController = async (req, res) => {
     try {
         // Fetch movies sorted by rank (descending order)
@@ -166,7 +170,7 @@ exports.trendingMoviesController = async (req, res) => {
     }
 }
 
-
+// Controller to get user's bookmarked movies and TV series
 exports.bookmarkControllers = async (req, res) => {
     try {
         const user = await usermodal.findById(req.userId);
@@ -196,22 +200,21 @@ exports.bookmarkControllers = async (req, res) => {
 }
 
 
-// check bookmark movie and tv series
+// Controller to check if a movie or TV series is bookmarked by the user
 exports.checkbookmark = async (req, res) => {
-    const { movieId, tvseriesId } = req.body;
+
     const user = await usermodal.findById(req.userId);
-    if (movieId && user.bookmarkmovie.includes(movieId)) {
-        return res.status(200).json({ message: 'Movie bookmark already exists', success: true });
-    }
 
-    if (tvseriesId && user.bookmarkseries.includes(tvseriesId)) {
-        return res.status(200).json({ message: 'TV series bookmark already exists', success: true });
-    }
-
-    return res.status(200).json({ message: ' bookmark not exist exists', success: false });
+    return res.status(200).json({
+        message: ' bookmark not exist exists',
+        success: true,
+        bookmarkmovie: user.bookmarkmovie,
+        bookmarkseries: user.bookmarkseries
+    });
 
 }
 
+// Controller to add a movie or TV series to user's bookmarks
 exports.setbookmarkControllers = async (req, res) => {
     const { movieId, tvseriesId } = req.body;
     try {
@@ -254,9 +257,8 @@ exports.setbookmarkControllers = async (req, res) => {
 
 
 
-// remove bookmark
+// Controller to remove a bookmarked movie or TV series
 exports.removeBookmark = async (req, res) => {
-    // const { movieId, tvseriesId } = req.body;
     const { id } = req.params
     try {
         const user = await usermodal.findById(req.userId);

@@ -1,52 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import MovieCard from './MovieCard';
-import axios from 'axios';
 import Navbar from '../../component/Navbar';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setsearchinput } from '../../redux/slice/searchSlice';
 import Preloader from '../../component/Preloader';
 import axiosInstance from '../../utils/axiosInstance';
+import { setmbookmarkdata } from '../../redux/slice/detailSlice';
 
 
 const Movie = () => {
 
-    const searchstate = useSelector((state) => state.search.searchinput)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const [query, setQuery] = useState('');
-    const navigate = useNavigate()
+    const [movie, setMovie] = useState();
+    const [isauth, setisauth] = useState(true); // State to track authentication status
 
-    const [movie, setMovie] = useState()
-
+    // Function to fetch movies
     const getmovies = async () => {
         try {
-            const { data } = await axiosInstance.get('/api/v1/data/movies')
+            const { data } = await axiosInstance.get('/api/v1/data/movies');
             if (data.success) {
-                setMovie(data.moviedata)
+                setMovie(data.moviedata); // Set the fetched movies
             }
         } catch (error) {
-            if (!error.response.data.success) {
-                navigate('/login')
-            }
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
-
-
+    // Fetch movies when the component mounts
     useEffect(() => {
-        getmovies()
-    }, [])
+        getmovies();
+    }, []);
 
-
+    // Function to handle form submission for searching movies
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             const response = await axiosInstance.get(`/api/v1/data/movie/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
-                dispatch(setsearchinput(response.data.moviedata))
-                navigate('/search/movie')
+                dispatch(setsearchinput(response.data.moviedata)); // Set search input in Redux store
+                navigate('/search/movie'); // Navigate to search results page
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -57,11 +53,30 @@ const Movie = () => {
         }
     };
 
+    // Check bookmark status when the component mounts
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check`);
+                if (data.success) {
+                    setisauth(true); // User is authenticated
+                    dispatch(setmbookmarkdata(data.bookmarkmovie)); // Set bookmarked movies
+                } else {
+                    setisauth(false); // User is not authenticated
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
+        checkBookmarkStatus(); // Call the function to check bookmark status
+    }, []);
 
     return (
         <>
-            <Navbar />
+            <Navbar /> {/* Render Navbar */}
+
+            {/* Search form */}
             <div>
                 <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                     <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -75,15 +90,29 @@ const Movie = () => {
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                 </form>
-
             </div>
+
+            {/* Render movies */}
             <div className="container mx-auto py-8">
                 <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2">
-                    {
-                        movie ? movie.map((movie) => {
-                            return (<MovieCard key={movie._id} movie={movie} title={movie.title} imageUrl={movie.image} movieid={movie._id} />)
-                        }) : <div className='absolute left-[50%] right-[50%]'> <Preloader /> </div>
-                    }
+                    {movie ? (
+                        movie.map((movie) => {
+                            return (
+                                <MovieCard
+                                    key={movie._id}
+                                    movie={movie}
+                                    title={movie.title}
+                                    imageUrl={movie.image}
+                                    movieid={movie._id}
+                                    isauth={isauth} // Pass authentication status to MovieCard
+                                />
+                            );
+                        })
+                    ) : (
+                        <div className='absolute left-[50%] right-[50%]'>
+                            <Preloader /> {/* Display preloader if movies are being fetched */}
+                        </div>
+                    )}
                 </div>
             </div>
         </>

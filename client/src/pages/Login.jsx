@@ -1,43 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axiosInstance from '../utils/axiosInstance';
 
 const Login = () => {
 
+    // React Router's navigate function for redirection
     const navigate = useNavigate()
 
+    // State variables for email, password, and password visibility
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
+    // Function to handle login validation
     const validatepassword = async (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission behavior
         try {
+            // Sending login request to the server
             const res = await axiosInstance.post('/api/v1/user/login', { email: email, password: password })
-            console.log(res)
             const data = res.data
             if (data.success) {
-                toast.success(data.massage)
-                navigate('/')
+                toast.success(data.massage) // Display success message
+                navigate('/') // Redirect to home page
             } else {
-                toast.error("invalid email and password")
+                toast.error("Invalid email and password") // Display error message for invalid credentials
             }
 
         } catch (error) {
-            toast.error(error.response.data.massage)
-            console.log("user not found", error)
+            toast.error(error.response.data.massage) // Display error message for server errors
+            console.log("User not found", error)
         }
     }
 
-    // useEffect(()=>{
-    //     validatepassword
-    // },[])
-
-
+    // Function to toggle password visibility
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };

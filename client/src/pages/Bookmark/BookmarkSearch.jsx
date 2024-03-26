@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MovieCard from '../movie/MovieCard';
 import TvseriesCard from '../TVseries/TvseriesCard';
 import Navbar from '../../component/Navbar';
 import axiosInstance from '../../utils/axiosInstance';
-
+import { setTvbookmarkdata, setmbookmarkdata } from '../../redux/slice/detailSlice';
 
 const BookmarkSearch = () => {
+    const dispatch = useDispatch(); // Initializing useDispatch hook to dispatch actions
+    const searchstate = useSelector((state) => state.search.searchinput); // Fetching search input from Redux store
 
-    const searchstate = useSelector((state) => state.search.searchinput)
-    const [query, setQuery] = useState('');
-    const [Search, setSearch] = useState(searchstate)
+    const [query, setQuery] = useState(''); // State to hold search query
+    const [Search, setSearch] = useState(searchstate); // State to hold search results
+    const [isauth, setisauth] = useState(true)
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`); // Making API call to search bookmarked shows
             if (response.data.success) {
-                setSearch(response.data.searchData)
+                setSearch(response.data.searchData); // Setting search results
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -29,11 +30,34 @@ const BookmarkSearch = () => {
         }
     };
 
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check/${userid}`); // Making API call to check bookmark status
+                if (data.success) {
+                    setisauth(true)
+                    dispatch(setmbookmarkdata(data.bookmarkmovie)); // Dispatching action to set bookmarked movies data
+                    dispatch(setTvbookmarkdata(data.bookmarkseries)); // Dispatching action to set bookmarked TV series data
+                } else {
+                    setisauth(false)
+                }
+            } catch (error) {
+                if (!error.response.data.success) {
+                    navigate('/login'); // Navigating to login page if user is not authenticated
+                }
+                console.log(error);
+            }
+        };
+
+        checkBookmarkStatus();
+
+    }, []);
 
     return (
         <div>
             <Navbar />
 
+            {/* Search form */}
             <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                 <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -47,24 +71,34 @@ const BookmarkSearch = () => {
                 </div>
             </form>
 
+            {/* Display search results */}
             <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2 py-2">
-                {
-                    Search ? Search.map((data) => {
-                        return (data.type === "movie" ? <MovieCard
-                            key={data._id}
-                            movie={data}
-                            title={data.title}
-                            imageUrl={data.image}
-                            movieid={data._id} /> : <TvseriesCard
-                            key={data._id}
-                            Tvseriescontent={data}
-                            title={data.title}
-                            imageUrl={data.big_image}
-                            TvseriesId={data._id} />)
-                    }) : <p>not found</p>
-                }
+                {Search ? (
+                    Search.map((data) => {
+                        return (data.type === "movie" ? (
+                            <MovieCard
+                                key={data._id}
+                                movie={data}
+                                title={data.title}
+                                imageUrl={data.image}
+                                movieid={data._id}
+                                isauth={isauth}
+                            />
+                        ) : (
+                            <TvseriesCard
+                                key={data._id}
+                                Tvseriescontent={data}
+                                title={data.title}
+                                imageUrl={data.big_image}
+                                TvseriesId={data._id}
+                                isauth={isauth}
+                            />
+                        ));
+                    })
+                ) : (
+                    <p>Not found</p>
+                )}
             </div>
-
         </div>
     );
 };

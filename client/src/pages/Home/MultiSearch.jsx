@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import MovieCard from '../movie/MovieCard';
 import TvseriesCard from '../TVseries/TvseriesCard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '../../component/Navbar';
 import axiosInstance from '../../utils/axiosInstance'
-
+import { setTvbookmarkdata, setmbookmarkdata } from '../../redux/slice/detailSlice';
 
 const MultiSearch = () => {
-
-    const searchstate = useSelector((state) => state.search.searchinput)
+    const dispatch = useDispatch();
+    const searchstate = useSelector((state) => state.search.searchinput);
     const [query, setQuery] = useState('');
-    const [Search, setSearch] = useState(searchstate)
+    const [Search, setSearch] = useState(searchstate);
+    const [isauth, setisauth] = useState(true);
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
             const response = await axiosInstance.get(`/api/v1/data/all/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
-                setSearch(response.data.searchData)
+                setSearch(response.data.searchData); // Set the search results
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -29,11 +29,30 @@ const MultiSearch = () => {
         }
     };
 
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check/${userid}`);
+                if (data.success) {
+                    setisauth(true);
+                    dispatch(setmbookmarkdata(data.bookmarkmovie)); // Set bookmarked movies
+                    dispatch(setTvbookmarkdata(data.bookmarkseries)); // Set bookmarked TV series
+                } else {
+                    setisauth(false);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        checkBookmarkStatus();
+    }, []);
 
     return (
         <div>
             <Navbar />
 
+            {/* Search form */}
             <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                 <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -47,24 +66,36 @@ const MultiSearch = () => {
                 </div>
             </form>
 
+            {/* Render search results */}
             <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2 py-2">
-                {
-                    Search ? Search.map((data) => {
-                        return (data.type === "movie" ? <MovieCard
-                            key={data._id}
-                            movie={data}
-                            title={data.title}
-                            imageUrl={data.image}
-                            movieid={data._id} /> : <TvseriesCard
-                            key={data._id}
-                            Tvseriescontent={data}
-                            title={data.title}
-                            imageUrl={data.big_image}
-                            TvseriesId={data._id} />)
-                    }) : <p>not found</p>
-                }
+                {Search ? (
+                    Search.map((data) => {
+                        return (
+                            data.type === "movie" ? (
+                                <MovieCard
+                                    key={data._id}
+                                    movie={data}
+                                    title={data.title}
+                                    imageUrl={data.image}
+                                    movieid={data._id}
+                                    isauth={isauth} // Pass isauth prop to MovieCard
+                                />
+                            ) : (
+                                <TvseriesCard
+                                    key={data._id}
+                                    Tvseriescontent={data}
+                                    title={data.title}
+                                    imageUrl={data.big_image}
+                                    TvseriesId={data._id}
+                                    isauth={isauth} // Pass isauth prop to TvseriesCard
+                                />
+                            )
+                        );
+                    })
+                ) : (
+                    <p>not found</p>
+                )}
             </div>
-
         </div>
     );
 };

@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
-
+// Function to connect to MongoDB database
 const connectdb = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
-        console.log(`connected to mongodb database ${mongoose.connection.host} `)
+        console.log(`Connected to MongoDB database at ${mongoose.connection.host}`);
     } catch (error) {
-        console.log(`mongoose connect error massage ${error}`)
+        console.log(`MongoDB connection error message: ${error}`);
     }
 }
 
-module.exports = connectdb;
+module.exports = connectdb; // Exporting the connectdb function for use in other files

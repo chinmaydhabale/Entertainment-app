@@ -1,8 +1,8 @@
-const User = require('../Models/usermodel');
+const usermodel = require('../Models/usermodel');
 const tvseries = require('../Models/Tvseriesmodel');
 const MovieModel = require('../Models/Moviesmodel');
 
-
+// Controller for searching movies
 exports.moviesearch = async (req, res) => {
     try {
         const { query } = req.params;
@@ -20,7 +20,7 @@ exports.moviesearch = async (req, res) => {
     }
 };
 
-
+// Controller for searching TV series
 exports.seriessearch = async (req, res) => {
     try {
         const { query } = req.params;
@@ -38,7 +38,7 @@ exports.seriessearch = async (req, res) => {
     }
 };
 
-
+// Controller for searching movies and TV series together
 exports.multisearch = async (req, res) => {
     try {
         const { query } = req.params;
@@ -65,15 +65,13 @@ exports.multisearch = async (req, res) => {
     }
 };
 
-
-
-
+// Controller for searching bookmarked movies and TV series
 exports.bookmarkSearch = async (req, res) => {
     try {
         const { query } = req.params;
 
         // Search for user document by userId
-        const user = await User.findById(req.userId)
+        const user = await usermodel.findById(req.userId)
             .populate('bookmarkmovie')
             .populate('bookmarkseries');
 
@@ -100,7 +98,3 @@ exports.bookmarkSearch = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
-
-
-
-

@@ -6,44 +6,42 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setsearchinput } from '../../redux/slice/searchSlice'
 import Preloader from '../../component/Preloader'
+import axiosInstance from '../../utils/axiosInstance'
+import { setTvbookmarkdata } from '../../redux/slice/detailSlice'
 
 const TVseries = () => {
-    const searchstate = useSelector((state) => state.search.searchinput)
     const dispatch = useDispatch()
-
-    const [query, setQuery] = useState('');
-
     const navigate = useNavigate()
 
-    const [tvseries, setTvseries] = useState()
+    const [query, setQuery] = useState(''); // State to store the search query
+    const [isauth, setisauth] = useState(true); // State to track authentication status
+    const [tvseries, setTvseries] = useState(); // State to store TV series data
 
+    // Function to fetch TV series data from the backend
     const getTvseries = async () => {
         try {
-            const { data } = await axios.get('http://localhost:8080/api/v1/data/tvseries')
+            const { data } = await axiosInstance.get('/api/v1/data/tvseries');
             if (data.success) {
-                setTvseries(data.tvseriesdata)
+                setTvseries(data.tvseriesdata); // Set TV series data in state
             }
         } catch (error) {
-            if (!error.response.data.success) {
-                navigate('/login')
-            }
-            console.log(error)
+            console.log(error);
         }
     }
 
+    // useEffect hook to fetch TV series data when the component mounts
     useEffect(() => {
-        getTvseries()
-    }, [])
+        getTvseries();
+    }, []);
 
-
-
+    // Function to handle form submission for searching TV series
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axios.get(`/api/v1/data/series/search/${encodeURIComponent(query)}`);
+            const response = await axiosInstance.get(`/api/v1/data/series/search/${encodeURIComponent(query)}`);
             if (response.data.success) {
-                dispatch(setsearchinput(response.data.seriesdata))
-                navigate('/search/series')
+                dispatch(setsearchinput(response.data.seriesdata)); // Set search input in Redux store
+                navigate('/search/series'); // Navigate to search results page
             } else {
                 // Handle no results found
                 console.log(response.data.message);
@@ -54,9 +52,30 @@ const TVseries = () => {
         }
     };
 
+    // useEffect hook to check bookmark status when the component mounts
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check`);
+                if (data.success) {
+                    setisauth(true); // User is authenticated
+                    dispatch(setTvbookmarkdata(data.bookmarkseries)); // Set TV series bookmark data in Redux store
+                } else {
+                    setisauth(false); // User is not authenticated
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        checkBookmarkStatus(); // Call the function to check bookmark status
+
+    }, []);
+
     return (
         <>
             <Navbar />
+            {/* Search form */}
             <form onSubmit={handleSubmit} className="w-full px-2 sm:px-0 py-2">
                 <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div className="relative">
@@ -69,12 +88,19 @@ const TVseries = () => {
                     <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                 </div>
             </form>
+            {/* Display TV series */}
             <div className="container mx-auto py-8 ">
                 <div className="grid grid-cols-5 gap-4 px-4 sm:grid-cols-3 2sm:grid-cols-2">
                     {
-                        tvseries ? tvseries.map((series) => {
-                            return (<TvseriesCard key={series._id} Tvseriescontent={series} title={series.title} imageUrl={series.big_image} TvseriesId={series._id} />)
-                        }) : <div className='absolute left-[50%] right-[50%]'> <Preloader /> </div>
+                        tvseries ? (
+                            // Map through TV series data and render TvseriesCard component for each series
+                            tvseries.map((series) => (
+                                <TvseriesCard key={series._id} Tvseriescontent={series} title={series.title} imageUrl={series.big_image} TvseriesId={series._id} isauth={isauth} />
+                            ))
+                        ) : (
+                            // Display preloader if TV series data is not yet available
+                            <div className='absolute left-[50%] right-[50%]'> <Preloader /> </div>
+                        )
                     }
                 </div>
             </div>
@@ -82,6 +108,4 @@ const TVseries = () => {
     );
 }
 
-export default TVseries
-
-
+export default TVseries;

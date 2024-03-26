@@ -5,28 +5,28 @@ const { verifyToken } = require('../middleware/jwtauth')
 
 
 //getmovie list
-router.get('/movies', verifyToken, movieControllers)
+router.get('/movies', movieControllers)
 //get Tvseries list
-router.get('/tvseries', verifyToken, tvseriesControllers)
+router.get('/tvseries', tvseriesControllers)
 
 //get all tvseries and movies
-router.get('/getall', verifyToken, getAllData)
+router.get('/getall', getAllData)
 
 //get recomand movies
-router.get('/recomand/movies', verifyToken, recomandmoviescontroller)
+router.get('/recomand/movies', recomandmoviescontroller)
 
 //get recomand tvseries
-router.get('/recomand/tvseries', verifyToken, recomandseriescontroller)
+router.get('/recomand/tvseries', recomandseriescontroller)
 
 
 //get trending movies
-router.get('/trending/movies', verifyToken, trendingMoviesController)
+router.get('/trending/movies', trendingMoviesController)
 
 //get bookmark 
 router.get('/bookmark', verifyToken, bookmarkControllers)
 
 // check bookmark
-router.post('/bookmark/check', verifyToken, checkbookmark)
+router.get('/bookmark/check', verifyToken, checkbookmark)
 
 //add bookmark
 router.post('/bookmark/add', verifyToken, setbookmarkControllers)

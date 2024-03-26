@@ -14,6 +14,9 @@ const useSchema = new mongoose.Schema({
     bookmarkseries: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tvseries' }],
 }, { timestamps: true })
 
+
+
+
 const usermodel = mongoose.model("User", useSchema);
 
 module.exports = usermodel;

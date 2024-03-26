@@ -1,60 +1,72 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { setcontent } from '../../redux/slice/detailSlice';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 
-const TvseriesCard = ({ Tvseriescontent, imageUrl, title, TvseriesId }) => {
+const TvseriesCard = ({ Tvseriescontent, imageUrl, title, TvseriesId, isauth }) => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const bookmarkcheck = useSelector((state) => state.detail.seriesbookmarkdata)
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(() => {
-        const checkBookmarkStatus = async () => {
-            try {
-                const { data } = await axios.post(`http://localhost:8080/api/v1/data/bookmark/check`, { tvseriesId: TvseriesId });
-                setIsBookmarked(data.success);
-            } catch (error) {
-                console.log(error);
+        const checkBookmarkStatus = (id) => {
+            if (id && bookmarkcheck.includes(id)) {
+                setIsBookmarked(true)
+            } else {
+                setIsBookmarked(false)
             }
         };
 
-        checkBookmarkStatus();
+        if (isauth) {
+            checkBookmarkStatus(TvseriesId);
+        }
+
     }, [TvseriesId]);
 
 
 
     const Addtobookmark = async (id) => {
         try {
-            const { data } = await axios.post('http://localhost:8080/api/v1/data/bookmark/add', { tvseriesId: id })
+            const { data } = await axiosInstance.post(`/api/v1/data/bookmark/add`, { tvseriesId: id })
             if (data.success) {
                 setIsBookmarked(true)
                 toast.success("Bookmark Tvseries")
+            } else {
+                navigate('/login')
+                toast.error('login required')
             }
         } catch (error) {
+
             console.log(error)
-            toast.success(error.response.data.message)
         }
+
     }
 
 
     const removebookmark = async (id) => {
         try {
-            const { data } = await axios.delete(`http://localhost:8080/api/v1/data/bookmark/remove/${id}`)
+            const { data } = await axiosInstance.delete(`/api/v1/data/bookmark/remove/${id}`)
             if (data.success) {
                 toast.success("UnBookmark Tvseries")
                 setIsBookmarked(false)
+            } else {
+                navigate('/login')
+                toast.error("login required")
             }
         } catch (error) {
+
             console.log(error)
         }
+
     }
 
     const isPlay = () => {

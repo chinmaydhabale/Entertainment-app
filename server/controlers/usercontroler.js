@@ -3,8 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const emailValidator = require("email-validator");
 
-
-// create users
+// Controller for user registration
 exports.registerControllers = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -33,16 +32,16 @@ exports.registerControllers = async (req, res) => {
 
         const hashedpassword = await bcrypt.hash(password, 10);
 
-        //save new user
+        // Save new user
         const user = new usermodal({ email, password: hashedpassword })
         await user.save();
 
-        const token = jwt.sign({ userId: user._id }, process.env.SECRETE_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, process.env.SECRETE_KEY, { expiresIn: '1d' });
 
         res.cookie("jwt", token, {
             withCredentials: true,
             httpOnly: false,
-            maxAge: 100000000,
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
         return res.status(201).send({
@@ -60,36 +59,7 @@ exports.registerControllers = async (req, res) => {
     }
 }
 
-
-
-
-// all users
-
-exports.getAllUsers = async (req, res) => {
-    try {
-        const users = await usermodal.find({})
-        return res.status(200).send({
-            userCount: users.length,
-            success: true,
-            massage: 'all users data',
-            users
-        })
-    } catch (error) {
-        console.log(error)
-        return res.status(500).send({
-            massage: 'error in to get users',
-            success: false,
-            error
-        })
-    }
-}
-
-
-
-
-
-//login user
-
+// Controller for user login
 exports.loginControllers = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -118,12 +88,12 @@ exports.loginControllers = async (req, res) => {
             })
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.SECRETE_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, process.env.SECRETE_KEY, { expiresIn: '1d' });
 
         res.cookie("jwt", token, {
             withCredentials: true,
-            httpOnly: true,
-            maxAge: 100000000,
+            httpOnly: false,
+            maxAge: 24 * 60 * 60 * 1000,
             samesite: "none",
             domain: 'localhost'
         });
@@ -131,6 +101,7 @@ exports.loginControllers = async (req, res) => {
         return res.status(200).send({
             success: true,
             massage: 'Login successfully',
+            user
         })
 
 

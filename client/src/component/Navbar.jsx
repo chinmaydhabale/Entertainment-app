@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiFillAppstore } from "react-icons/ai";
 import { HiBookmark } from "react-icons/hi2";
@@ -7,27 +7,26 @@ import { TbDeviceTvOld } from "react-icons/tb";
 import { useCookies } from "react-cookie";
 import toast from 'react-hot-toast';
 
-
 const Navbar = () => {
 
     const { pathname } = useLocation();
     const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
     const navigate = useNavigate()
 
-    useEffect(() => {
-        const verifytoken = () => {
-            if (!cookies.jwt) {
-                navigate("/login");
-            }
-        }
-        verifytoken()
-    })
 
     const logOut = () => {
-        removeCookie("jwt");
-        toast.success("Successfully Logout")
-        navigate("/login");
+        if (cookies.jwt) {
+            removeCookie("jwt");
+            localStorage.removeItem("jwt")
+            toast.success("Successfully Logout")
+            navigate("/login");
+        } else {
+            navigate("/login");
+            toast.success("you are not log in")
+        }
     };
+
+
 
     return (
         <nav className="bg-gray-800 p-4 flex justify-between items-center">

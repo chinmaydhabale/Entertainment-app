@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import axiosInstance from '../utils/axiosInstance';
+import axiosInstance from '../utils/axiosInstance'; // Import axiosInstance from your utils folder
 
 const Register = () => {
 
     const navigate = useNavigate()
 
+    // State variables for password visibility and form data
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
@@ -18,14 +18,17 @@ const Register = () => {
         confirmPassword: ''
     });
 
+    // Function to toggle password visibility
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    // Function to toggle confirm password visibility
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    // Function to handle input changes in the form
     const handleInputChange = event => {
         const { name, value } = event.target;
         setFormData(prevState => ({
@@ -34,26 +37,24 @@ const Register = () => {
         }));
     };
 
+    // Function to handle form submission
     const handleSubmit = async event => {
         event.preventDefault();
         const { confirmPassword, ...userData } = formData; // Exclude confirmPassword from userData
         if (formData.password !== confirmPassword) {
-            // Display error message or handle password mismatch
+            // Display error message if passwords do not match
             toast.error("Passwords do not match");
             return;
         }
         try {
-            const { data } = await axiosInstance.post('/api/v1/user/register', userData); // Send userData to the server
-            toast.success('Register Successfully')
-            navigate('/login')
-            // Handle successful registration
+            const { data } = await axiosInstance.post('/api/v1/user/register', userData); // Send userData to the server using axiosInstance
+            toast.success('Register Successfully') // Display success message
+            navigate('/login') // Redirect to login page after successful registration
         } catch (error) {
-            toast.error(error.response.data.massage)
+            toast.error(error.response.data.massage) // Display error message for registration failure
             console.error('Error registering user:', error);
-            // Handle registration failure
         }
     };
-
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">

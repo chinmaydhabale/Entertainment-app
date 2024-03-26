@@ -1,65 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookmark } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setcontent } from '../../../redux/slice/detailSlice';
 import axiosInstance from '../../../utils/axiosInstance';
 
-const RecomandScard = ({ series }) => {
+const RecomandScard = ({ series, isauth }) => {
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const bookmarkcheck = useSelector((state) => state.detail.seriesbookmarkdata);
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(() => {
-        const checkBookmarkStatus = async () => {
-            try {
-                const { data } = await axiosInstance.post(`/api/v1/data/bookmark/check`, { tvseriesId: series._id });
-                setIsBookmarked(data.success);
-            } catch (error) {
-                console.log(error);
+        // Function to check if the series is bookmarked
+        const checkBookmarkStatus = (id) => {
+            if (id && bookmarkcheck.includes(id)) {
+                setIsBookmarked(true);
+            } else {
+                setIsBookmarked(false);
             }
         };
 
-        checkBookmarkStatus();
-    }, [series._id]);
+        if (isauth) {
+            checkBookmarkStatus(series._id);
+        }
+    }, [series._id, bookmarkcheck, isauth]);
 
-
-
+    // Function to add series to bookmarks
     const Addtobookmark = async (id) => {
         try {
-            const { data } = await axiosInstance.post('/api/v1/data/bookmark/add', { tvseriesId: id })
+            const { data } = await axiosInstance.post(`/api/v1/data/bookmark/add`, { tvseriesId: id });
             if (data.success) {
-                setIsBookmarked(true)
-                toast.success("Bookmark Tvseries")
+                setIsBookmarked(true);
+                toast.success("Bookmark Tvseries");
+            } else {
+                navigate("/login");
             }
         } catch (error) {
-            console.log(error)
-            toast.success(error.response.data.message)
+            console.log(error);
         }
-    }
+    };
 
-
+    // Function to remove series from bookmarks
     const removebookmark = async (id) => {
         try {
-            const { data } = await axiosInstance.delete(`/api/v1/data/bookmark/remove/${id}`)
+            const { data } = await axiosInstance.delete(`/api/v1/data/bookmark/remove/${id}`);
             if (data.success) {
-                toast.success("UnBookmark Tvseries")
-                setIsBookmarked(false)
+                toast.success("UnBookmark Tvseries");
+                setIsBookmarked(false);
+            } else {
+                navigate("/login");
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
+    // Function to navigate to series detail page
     const isPlay = () => {
-        dispatch(setcontent(series))
-        navigate("/detail")
-    }
+        dispatch(setcontent(series));
+        navigate("/detail");
+    };
 
     return (
         <div className="movie-card relative overflow-hidden group">
@@ -77,7 +82,7 @@ const RecomandScard = ({ series }) => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default RecomandScard
+export default RecomandScard; // Exporting the component

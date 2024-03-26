@@ -1,5 +1,7 @@
 import axios from 'axios'
 
-const axiosInstance = axios.create({ baseURL: 'http://localhost:8080', withCredentials: true })
+// Create an axios instance with the base URL from environment variables and enabling credentials
+const axiosInstance = axios.create({ baseURL: import.meta.env.VITE_HOST, withCredentials: true })
 
+// Export the axios instance for making HTTP requests
 export default axiosInstance

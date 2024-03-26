@@ -8,12 +8,12 @@ import { useCookies } from "react-cookie";
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
-
+    // Get the current path location
     const { pathname } = useLocation();
     const [cookies, setCookie, removeCookie] = useCookies(['jwt']);
     const navigate = useNavigate()
 
-
+    // Function to log out the user
     const logOut = () => {
         if (cookies.jwt) {
             removeCookie("jwt");
@@ -26,13 +26,9 @@ const Navbar = () => {
         }
     };
 
-
-
     return (
         <nav className="bg-gray-800 p-4 flex justify-between items-center">
-
             <MdMovie className="text-red-500 text-4xl md:text-3xl" />
-
             <div className="text-2xl  flex px-4 space-x-16 md:space-x-8 sm:space-x-4">
                 <Link to='/'><AiFillAppstore className={
                     "hover:text-white " +
@@ -40,9 +36,7 @@ const Navbar = () => {
                         ? "text-red-600"
                         : "text-white")
                 } /></Link>
-
                 <Link to='/movies'><MdLocalMovies
-
                     className={
                         "hover:text-white " +
                         (pathname === "/movies"

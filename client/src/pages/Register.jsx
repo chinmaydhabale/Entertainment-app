@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axiosInstance from '../utils/axiosInstance'; // Import axiosInstance from your utils folder
 
@@ -94,7 +94,7 @@ const Register = () => {
                     <button type="submit" className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg">Sign Up</button>
                 </form>
                 <div className="mt-4">
-                    <p>Already have an account? <a href="/login" className="text-blue-500">Login here</a></p>
+                    <p>Already have an account? <Link to="/login" className="text-blue-500">Login here</Link></p>
                 </div>
             </div>
         </div>

@@ -32,7 +32,7 @@ const MultiSearch = () => {
     useEffect(() => {
         const checkBookmarkStatus = async () => {
             try {
-                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check/${userid}`);
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check`);
                 if (data.success) {
                     setisauth(true);
                     dispatch(setmbookmarkdata(data.bookmarkmovie)); // Set bookmarked movies

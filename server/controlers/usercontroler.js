@@ -116,3 +116,18 @@ exports.loginControllers = async (req, res) => {
         })
     }
 }
+
+
+// Controller for user logout
+exports.logOutController = async function (req, res) {
+    try {
+        // Clear user authentication cookie
+        res
+            .clearCookie("jwt")
+            .status(200)
+            .json({ success: true, message: "User Logout Successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};

@@ -123,7 +123,7 @@ exports.logOutController = async function (req, res) {
     try {
         // Clear user authentication cookie
         res
-            .clearCookie("jwt")
+            .clearCookie("jwt", { secure: true, sameSite: "None" })
             .status(200)
             .json({ success: true, message: "User Logout Successfully" });
     } catch (error) {

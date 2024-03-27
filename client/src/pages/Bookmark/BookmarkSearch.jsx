@@ -17,12 +17,12 @@ const BookmarkSearch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const response = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`); // Making API call to search bookmarked shows
-            if (response.data.success) {
-                setSearch(response.data.searchData); // Setting search results
+            const { data } = await axiosInstance.get(`/api/v1/data/bookmark/search/${encodeURIComponent(query)}`); // Making API call to search bookmarked shows
+            if (data.success) {
+                setSearch(data.searchData); // Setting search results
             } else {
                 // Handle no results found
-                console.log(response.data.message);
+                console.log(data.message);
             }
         } catch (error) {
             console.error(error);
@@ -33,7 +33,7 @@ const BookmarkSearch = () => {
     useEffect(() => {
         const checkBookmarkStatus = async () => {
             try {
-                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check/${userid}`); // Making API call to check bookmark status
+                const { data } = await axiosInstance.get(`/api/v1/data/bookmark/check`); // Making API call to check bookmark status
                 if (data.success) {
                     setisauth(true)
                     dispatch(setmbookmarkdata(data.bookmarkmovie)); // Dispatching action to set bookmarked movies data

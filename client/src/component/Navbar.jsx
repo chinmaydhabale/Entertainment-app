@@ -17,6 +17,7 @@ const Navbar = () => {
     const handlelogOut = async () => {
         const { data } = await axiosInstance.get("/api/v1/user/logout")
         if (data.success) {
+            window.location.reload();
             navigate('/')
             toast.success(data.message)
         } else {

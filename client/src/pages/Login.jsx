@@ -65,7 +65,7 @@ const Login = () => {
                     <button type="submit" className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg">Login</button>
                 </form>
                 <div className="mt-4">
-                    <p>Don't have an account? <Link href="/register" className="text-blue-500">Create your account</Link></p>
+                    <p>Don't have an account? <Link to="/register" className="text-blue-500">Create your account</Link></p>
                 </div>
             </div>
         </div>

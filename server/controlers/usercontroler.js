@@ -43,7 +43,7 @@ exports.registerControllers = async (req, res) => {
             httpOnly: false,
             maxAge: 24 * 60 * 60 * 1000,
             sucure: true,
-            SameSite: "None"
+            sameSite: "None"
         });
 
         return res.status(201).send({
@@ -96,7 +96,7 @@ exports.loginControllers = async (req, res) => {
             withCredentials: true,
             httpOnly: false,
             maxAge: 24 * 60 * 60 * 1000,
-            SameSite: "None",
+            sameSite: "None",
             secure: true
         });
 

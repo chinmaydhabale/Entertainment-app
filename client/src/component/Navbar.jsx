@@ -17,9 +17,8 @@ const Navbar = () => {
     const logOut = () => {
         if (cookies.jwt) {
             removeCookie("jwt");
-            localStorage.removeItem("jwt")
             toast.success("Successfully Logout")
-            navigate("/login");
+            window.location.reload()
         } else {
             navigate("/login");
             toast.success("you are not log in")

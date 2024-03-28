@@ -42,6 +42,10 @@ const TVbookmarkcard = ({ series, removeBookmarkCard }) => {
             {/* Play button and series title */}
             <div className="play-text absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                 <button className="bg-black text-white px-4 py-2 rounded-full" onClick={isPlay}>Play</button>
+                {/* TV series type */}
+                <div className="absolute top-0 left-0 bg-black bg-opacity-75 w-full py-2 px-4 ">
+                    <p className="text-white text-sm truncate">{series.type}</p>
+                </div>
                 <div className="absolute bottom-0 left-0 bg-black bg-opacity-75 w-full py-2 px-4 ">
                     <p className="text-white text-sm truncate">{series.title}</p>
                 </div>

@@ -36,7 +36,7 @@ The Entertainment App is a full-stack application designed to provide users with
 
 4. **Configure Environment Variables**: Create a `.env` 
    ```bash
-    PORT = 8080
+    PORT = "Here is your PORT Number"
     MONGO_URL = "Here is your mongo url"
     SECRETE_KEY = "Here is your jwt secrete Key"
     FRONT_URI="Here is your frontend local server Url"
@@ -97,5 +97,7 @@ By following these steps, you should have both the backend server and frontend a
 - **Backend** : https://entertainment-app-w3vk.onrender.com
 ### API Documentation
 You can visit API documentation from [here](https://documenter.getpostman.com/view/31265541/2sA35EaNk8)
+### Youtube Video
+You can visit Youtube tutorial Video from [here](https://youtu.be/2r0NEbkrvOg)
 
 

@@ -20,8 +20,7 @@ const Login = () => {
         event.preventDefault(); // Prevent default form submission behavior
         try {
             // Sending login request to the server
-            const res = await axiosInstance.post('/api/v1/user/login', { email: email, password: password })
-            const data = res.data
+            const { data } = await axiosInstance.post('/api/v1/user/login', { email: email, password: password })
             if (data.success) {
                 toast.success(data.massage) // Display success message
                 navigate('/') // Redirect to home page

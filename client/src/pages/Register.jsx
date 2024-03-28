@@ -48,8 +48,10 @@ const Register = () => {
         }
         try {
             const { data } = await axiosInstance.post('/api/v1/user/register', userData); // Send userData to the server using axiosInstance
-            toast.success('Register Successfully') // Display success message
-            navigate('/login') // Redirect to login page after successful registration
+            if (data.success) {
+                toast.success('Register Successfully') // Display success message
+                navigate('/login') // Redirect to login page after successful registration
+            }
         } catch (error) {
             toast.error(error.response.data.massage) // Display error message for registration failure
             console.error('Error registering user:', error);
